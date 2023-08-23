@@ -19,8 +19,8 @@ public class UserDaoJDBCImpl implements UserDao {
     public void createUsersTable() {
         String sql = "CREATE TABLE IF NOT EXISTS users " +
                 "(id BIGINT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255), last_name VARCHAR(255), age INT)";
-        try (Statement statement = connection.createStatement()) {
-            statement.executeUpdate(sql);
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -29,8 +29,8 @@ public class UserDaoJDBCImpl implements UserDao {
     // Удаление таблицы User(ов) – не должно приводить к исключению, если таблицы не существует
     public void dropUsersTable() {
         String sql = "DROP TABLE IF EXISTS users";
-        try (Statement statement = connection.createStatement()) {
-            statement.executeUpdate(sql);
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -63,8 +63,9 @@ public class UserDaoJDBCImpl implements UserDao {
     // Получение всех User(ов) из таблицы
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
-
-        try (ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM users")) {
+        String sql = "SELECT * FROM users";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
                 User user = new User(resultSet.getString("name"),
                         resultSet.getString("last_name"), resultSet.getByte("age"));
@@ -81,8 +82,8 @@ public class UserDaoJDBCImpl implements UserDao {
     // Очистка содержания таблицы
     public void cleanUsersTable() {
         String sql = "TRUNCATE TABLE users";
-        try (Statement statement = connection.createStatement()) {
-            statement.executeUpdate(sql);
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
